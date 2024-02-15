@@ -17,12 +17,12 @@
 
 The table above benchmarks the time taken to compute the convex hull of a set of points using the Divide and Conquer (DNC) algorithm and the Naive algorithm. The number of points ranges from 0 to 9000. The time taken is measured in seconds.
 
-**Source Code**: [convex_hull.py](convex_hull.py)
+**Source Code**: [convex_hull.py](src/convex_hull.py)
 
-**Benchmarking Code**: [benchmarks.py](benchmarks.py)
+**Benchmarking Code**: [benchmarks.py](src/benchmarks.py)
 
-![Benchmark Plot](benchmark_plot.png)
+![Benchmark Plot](src/benchmark_plot.png)
 
 The plot above shows the benchmarking results. The x-axis represents the number of points, and the y-axis represents the time taken in seconds. The blue line represents the time taken by the DNC algorithm, and the orange line represents the time taken by the Naive algorithm.
 
-Analyzing the ...
+Analyzing the ... (add analysis here)
