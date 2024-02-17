@@ -90,7 +90,9 @@ def sort_clockwise(points: List[Point]):
 def base_case_hull(points: List[Point]) -> List[Point]:
     """ Base case of the recursive algorithm.
     """
-    # TODO: You need to implement this function.
+    
+    if len(points) == 0:
+        return []
     return points
 
 
@@ -99,7 +101,72 @@ def compute_hull(points: List[Point]) -> List[Point]:
     Given a list of points, computes the convex hull around those points
     and returns only the points that are on the hull.
     """
-    # TODO: Implement a correct computation of the convex hull
-    #  using the divide-and-conquer algorithm
-    # TODO: Document your Initialization, Maintenance and Termination invariants.
-    return points
+    
+    # Sort the points by clockwise angle from the centroid.
+    sort_clockwise(points)
+    
+    # Base case
+    if len(points) <= 3:
+        return base_case_hull(points)
+    
+    # Divide the points into two halves.
+    midpoint = len(points) // 2
+
+    left_half = points[:midpoint]
+    right_half = points[midpoint:]
+
+    sort_clockwise(left_half)
+    sort_clockwise(right_half)
+
+    # Recursively compute the hulls of the two halves.
+    left_hull = compute_hull(left_half)
+    right_hull = compute_hull(right_half)
+
+    # Merge the two hulls.
+    return merge_hulls(left_hull, right_hull)
+
+
+def merge_hulls(left_hull: List[Point], right_hull: List[Point]) -> List[Point]:
+    """ Merges the two hulls into a single hull.
+    """
+    
+    # Find the rightmost point of the left hull and the leftmost point of the right hull.
+    leftmost_point = max(left_hull, key=lambda p: p[0])
+    rightmost_point = min(right_hull, key=lambda p: p[0])
+    
+    # Find the upper tangent.
+    upper_tangent = [leftmost_point, rightmost_point]
+    while True:
+        # Find the next point on the left hull.
+        next_point = left_hull[(left_hull.index(upper_tangent[0]) + 1) % len(left_hull)]
+        
+        # If the next point is to the right of the line from the current upper tangent to the rightmost point of the right hull, then we have found the upper tangent.
+        if is_counter_clockwise(upper_tangent[0], upper_tangent[1], next_point):
+            upper_tangent[0] = next_point
+        else:
+            break
+    
+    # Find the lower tangent.
+    lower_tangent = [leftmost_point, rightmost_point]
+    while True:
+        # Find the next point on the right hull.
+        next_point = right_hull[(right_hull.index(lower_tangent[1]) + 1) % len(right_hull)]
+        
+        # If the next point is to the left of the line from the current lower tangent to the leftmost point of the left hull, then we have found the lower tangent.
+        if is_clockwise(lower_tangent[1], lower_tangent[0], next_point):
+            lower_tangent[1] = next_point
+        else:
+            break
+    
+    # Merge the two hulls using the upper and lower tangents.
+    merged_hull = []
+    for point in left_hull:
+        if is_counter_clockwise(upper_tangent[0], lower_tangent[1], point):
+            merged_hull.append(point)
+    for point in right_hull:
+        if is_counter_clockwise(upper_tangent[0], lower_tangent[1], point):
+            merged_hull.append(point)
+
+    print("Merged hull:", merged_hull)
+
+    return merged_hull
