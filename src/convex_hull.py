@@ -92,36 +92,35 @@ def base_case_hull(points: List[Point]) -> List[Point]:
     Base case of the recursive algorithm.
     """
 
-    # Sort the points clockwise.
-    sort_clockwise(points)
+    if len(points) <= 3:
+        sort_clockwise(points)
+        return points
 
-    # Jarvis's March Algorithm - used when there are 4 or 5 points.
-    if len(points) == 4 or len(points) == 5:
-        # Initialize the convex hull.
-        hull = []
+    # Sort the points by ascending x value, breaking ties by ascending y value.
+    points.sort()
 
-        # Initialize our control variables.
-        p = 0
-        q = None
+    # Initialize the convex hull.
+    hull = []
 
-        # Iterate through the points to find the convex hull.
-        while True:
-            hull.append(points[p])
-            q = (p + 1) % len(points)
+    # Initialize our control variables.
+    p = 0
+    q = None
 
-            for i in range(len(points)):
-                if is_counter_clockwise(points[p], points[i], points[q]):
-                    q = i
+    # Iterate through the points to find the convex hull.
+    while True:
+        hull.append(points[p])
+        q = (p + 1) % len(points)
 
-            p = q
+        for i in range(len(points)):
+            if is_counter_clockwise(points[p], points[i], points[q]):
+                q = i
 
-            if p == 0:
-                break
-        
-        return hull
+        p = q
 
-    # If there are 3 or fewer points, then the convex hull is the points themselves.
-    return points
+        if p == 0:
+            break
+    
+    return hull
 
 
 def merge_hulls(L: List[Point], R: List[Point]) -> List[Point]:
@@ -137,8 +136,8 @@ def merge_hulls(L: List[Point], R: List[Point]) -> List[Point]:
     rightmost_L = L.index(max(L, key=lambda p: p[0]))
     leftmost_R = R.index(min(R, key=lambda p: p[0]))
 
-    print("Rightmost point in L (x,y):", L[rightmost_L])
-    print("Leftmost point in R (x,y):", R[leftmost_R])
+    print("Rightmost point in L (x,y):\t", L[rightmost_L])
+    print("Leftmost point in R (x,y):\t", R[leftmost_R])
 
     next = rightmost_L
 
@@ -147,10 +146,10 @@ def merge_hulls(L: List[Point], R: List[Point]) -> List[Point]:
     
     while True:
         # Find the next point in L, moving counter-clockwise from the rightmost point.
-        next = (next - 1) % len(L)
+        next = (next + 1) % len(L)
 
         # Check the next point in L against the upper tangent.
-        if is_counter_clockwise(R[upper_tangent[1]], L[upper_tangent[0]], L[next]):
+        if is_clockwise(R[upper_tangent[1]], L[upper_tangent[0]], L[next]):
             upper_tangent[0] = next
         else:
             break
@@ -159,15 +158,15 @@ def merge_hulls(L: List[Point], R: List[Point]) -> List[Point]:
 
     while True:
         # Find the next point in R, moving clockwise from the leftmost point.
-        next = (next + 1) % len(R)
+        next = (next - 1) % len(R)
 
         # Check the next point in R against the upper tangent.
-        if is_clockwise(L[upper_tangent[0]], R[upper_tangent[1]], R[next]):
+        if is_counter_clockwise(L[upper_tangent[0]], R[upper_tangent[1]], R[next]):
             upper_tangent[1] = next
         else:
             break
 
-    print("Upper tangent (x,y):", L[upper_tangent[0]], R[upper_tangent[1]])
+    print("Upper tangent (x,y):\t", L[upper_tangent[0]], R[upper_tangent[1]])
     
     # Find the lower tangent.
     lower_tangent = [rightmost_L, leftmost_R]
@@ -176,10 +175,10 @@ def merge_hulls(L: List[Point], R: List[Point]) -> List[Point]:
 
     while True:
         # Find the next point in L, moving clockwise from the rightmost point.
-        next = (next + 1) % len(L)
+        next = (next - 1) % len(L)
 
         # Check the next point in L against the lower tangent.
-        if is_clockwise(R[lower_tangent[1]], L[lower_tangent[0]], L[next]):
+        if is_counter_clockwise(R[lower_tangent[1]], L[lower_tangent[0]], L[next]):
             lower_tangent[0] = next
         else:
             break
@@ -188,21 +187,41 @@ def merge_hulls(L: List[Point], R: List[Point]) -> List[Point]:
 
     while True:
         # Find the next point in R, moving counter-clockwise from the leftmost point.
-        next = (next - 1) % len(R)
+        next = (next + 1) % len(R)
 
         # Check the next point in R against the lower tangent.
-        if is_counter_clockwise(L[lower_tangent[0]], R[lower_tangent[1]], R[next]):
+        if is_clockwise(L[lower_tangent[0]], R[lower_tangent[1]], R[next]):
             lower_tangent[1] = next
         else:
             break
     
-    print("Lower tangent (x,y):", L[lower_tangent[0]], R[lower_tangent[1]])
+    print("Lower tangent (x,y):\t", L[lower_tangent[0]], R[lower_tangent[1]])
+    print()
+
+    print("L (pre-merge):\n", L)
+    print("R (pre-merge):\n", R)
+    print("upper_tangent[0]:\t", upper_tangent[0])
+    print("upper_tangent[1]:\t", upper_tangent[1])
+    print("lower_tangent[0]:\t", lower_tangent[0])
+    print("lower_tangent[1]:\t", lower_tangent[1])
+    print()
 
     # Merge the two hulls together.
     merged_hull = []
-    merged_hull.extend(L[:upper_tangent[0] + 1])
-    merged_hull.extend(R[upper_tangent[1]:lower_tangent[1] + 1])
-    merged_hull.extend(L[lower_tangent[0]:])
+
+    for i in range(upper_tangent[0], len(L)):
+        print("+", L[i])
+        merged_hull.append(L[i])
+    
+    for i in range(0, lower_tangent[0] + 1):
+        print("+", L[i])
+        merged_hull.append(L[i])
+
+    for i in range(lower_tangent[1], upper_tangent[1] + 1):
+        print("+", R[i])
+        merged_hull.append(R[i])
+    
+    print("Merged hull:\n", merged_hull)
 
     return merged_hull
 
