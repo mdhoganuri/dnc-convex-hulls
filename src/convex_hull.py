@@ -93,7 +93,6 @@ def base_case_hull(points: List[Point]) -> List[Point]:
     """
 
     if len(points) <= 3:
-        sort_clockwise(points)
         return points
 
     # Sort the points by ascending x value, breaking ties by ascending y value.
@@ -165,8 +164,6 @@ def merge_hulls(L: List[Point], R: List[Point]) -> List[Point]:
             upper_tangent[1] = next
         else:
             break
-
-    print("Upper tangent (x,y):\t", L[upper_tangent[0]], R[upper_tangent[1]])
     
     # Find the lower tangent.
     lower_tangent = [rightmost_L, leftmost_R]
@@ -195,32 +192,30 @@ def merge_hulls(L: List[Point], R: List[Point]) -> List[Point]:
         else:
             break
     
+    print("L (pre-merge):\t", L)
+    print("R (pre-merge):\t", R)
+    print("Upper tangent (x,y):\t", L[upper_tangent[0]], R[upper_tangent[1]])
     print("Lower tangent (x,y):\t", L[lower_tangent[0]], R[lower_tangent[1]])
-    print()
-
-    print("L (pre-merge):\n", L)
-    print("R (pre-merge):\n", R)
-    print("upper_tangent[0]:\t", upper_tangent[0])
-    print("upper_tangent[1]:\t", upper_tangent[1])
-    print("lower_tangent[0]:\t", lower_tangent[0])
-    print("lower_tangent[1]:\t", lower_tangent[1])
+    print("upper_tangent (xi, yi):", upper_tangent[0], upper_tangent[1])
+    print("lower_tangent (xi, yi):", lower_tangent[0], lower_tangent[1])
     print()
 
     # Merge the two hulls together.
     merged_hull = []
 
     for i in range(upper_tangent[0], len(L)):
-        print("+", L[i])
         merged_hull.append(L[i])
     
     for i in range(0, lower_tangent[0] + 1):
-        print("+", L[i])
         merged_hull.append(L[i])
 
-    for i in range(lower_tangent[1], upper_tangent[1] + 1):
-        print("+", R[i])
+    for i in range(lower_tangent[1], len(R)):
         merged_hull.append(R[i])
     
+    for i in range(upper_tangent[1], lower_tangent[1]):
+        merged_hull.append(R[i])
+    
+    sort_clockwise(merged_hull)
     print("Merged hull:\n", merged_hull)
 
     return merged_hull
