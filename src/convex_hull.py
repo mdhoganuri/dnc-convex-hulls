@@ -128,97 +128,91 @@ def merge_hulls(L: List[Point], R: List[Point]) -> List[Point]:
     computes and returns the convex hull of the combined points in L and R.
     """
 
-    print("L:\n", L)
-    print("R:\n", R)
+    # Sort the points in L and R by ascending x value, breaking ties by ascending y value.
+    sort_clockwise(L)
+    sort_clockwise(R)
+    
+    # Print the hulls for debugging purposes.
+    print("L:", L)
+    print("R:", R)
 
-    # Find the rightmost point in L and the leftmost point in R.
-    rightmost_L = L.index(max(L, key=lambda p: p[0]))
-    leftmost_R = R.index(min(R, key=lambda p: p[0]))
+    # Initialize the convex hull.
+    result = []
 
-    print("Rightmost point in L (x,y):\t", L[rightmost_L])
-    print("Leftmost point in R (x,y):\t", R[leftmost_R])
-
-    next = rightmost_L
+    # Initialize our control variables.
+    rightmost_of_left = L.index(max(L, key=lambda p: p[0]))
+    leftmost_of_right = R.index(min(R, key=lambda p: p[0]))
+    next_pos = None
 
     # Find the upper tangent.
-    upper_tangent = [rightmost_L, leftmost_R]
+    upper_tangent = [L[rightmost_of_left], R[leftmost_of_right]]
+    next_pos = rightmost_of_left
     
     while True:
         # Find the next point in L, moving counter-clockwise from the rightmost point.
-        next = (next + 1) % len(L)
+        next_pos = (next_pos - 1) % len(L)
 
         # Check the next point in L against the upper tangent.
-        if is_clockwise(R[upper_tangent[1]], L[upper_tangent[0]], L[next]):
-            upper_tangent[0] = next
-        else:
-            break
-
-    next = leftmost_R
-
-    while True:
-        # Find the next point in R, moving clockwise from the leftmost point.
-        next = (next - 1) % len(R)
-
-        # Check the next point in R against the upper tangent.
-        if is_counter_clockwise(L[upper_tangent[0]], R[upper_tangent[1]], R[next]):
-            upper_tangent[1] = next
+        if is_clockwise(upper_tangent[1], upper_tangent[0], L[next_pos]):
+            upper_tangent[0] = L[next_pos]
         else:
             break
     
-    # Find the lower tangent.
-    lower_tangent = [rightmost_L, leftmost_R]
-
-    next = rightmost_L
-
-    while True:
-        # Find the next point in L, moving clockwise from the rightmost point.
-        next = (next - 1) % len(L)
-
-        # Check the next point in L against the lower tangent.
-        if is_counter_clockwise(R[lower_tangent[1]], L[lower_tangent[0]], L[next]):
-            lower_tangent[0] = next
-        else:
-            break
-
-    next = leftmost_R
+    next_pos = leftmost_of_right
 
     while True:
         # Find the next point in R, moving counter-clockwise from the leftmost point.
-        next = (next + 1) % len(R)
+        next_pos = (next_pos + 1) % len(R)
 
-        # Check the next point in R against the lower tangent.
-        if is_clockwise(L[lower_tangent[0]], R[lower_tangent[1]], R[next]):
-            lower_tangent[1] = next
+        # Check the next point in R against the upper tangent.
+        if is_counter_clockwise(upper_tangent[0], upper_tangent[1], R[next_pos]):
+            upper_tangent[1] = R[next_pos]
         else:
             break
     
-    print("L (pre-merge):\t", L)
-    print("R (pre-merge):\t", R)
-    print("Upper tangent (x,y):\t", L[upper_tangent[0]], R[upper_tangent[1]])
-    print("Lower tangent (x,y):\t", L[lower_tangent[0]], R[lower_tangent[1]])
-    print("upper_tangent (xi, yi):", upper_tangent[0], upper_tangent[1])
-    print("lower_tangent (xi, yi):", lower_tangent[0], lower_tangent[1])
-    print()
+    print("Upper tangent:", upper_tangent)
 
-    # Merge the two hulls together.
-    merged_hull = []
+    # Find the lower tangent.
+    lower_tangent = [L[rightmost_of_left], R[leftmost_of_right]]
+    next_pos = rightmost_of_left
 
-    for i in range(upper_tangent[0], len(L)):
-        merged_hull.append(L[i])
+    while True:
+        # Find the next point in L, moving clockwise from the rightmost point.
+        next_pos = (next_pos + 1) % len(L)
+
+        # Check the next point in R against the lower tangent.
+        if is_counter_clockwise(lower_tangent[1], lower_tangent[0], L[next_pos]):
+            lower_tangent[0] = L[next_pos]
+        else:
+            break
+
+    next_pos = leftmost_of_right
+
+    while True:
+        # Find the next point in R, moving clockwise from the leftmost point.
+        next_pos = (next_pos - 1) % len(R)
+
+        # Check the next point in R against the lower tangent.
+        if is_clockwise(lower_tangent[0], lower_tangent[1], R[next_pos]):
+            lower_tangent[1] = R[next_pos]
+        else:
+            break
     
-    for i in range(0, lower_tangent[0] + 1):
-        merged_hull.append(L[i])
+    print("Lower tangent:", lower_tangent)
 
-    for i in range(lower_tangent[1], len(R)):
-        merged_hull.append(R[i])
+    for i in range(L.index(lower_tangent[0]), L.index(upper_tangent[0]) + 1):
+        result.append(L[i])
     
-    for i in range(upper_tangent[1], lower_tangent[1]):
-        merged_hull.append(R[i])
+    for i in range(0, R.index(lower_tangent[1]) + 1):
+        result.append(R[i])
     
-    sort_clockwise(merged_hull)
-    print("Merged hull:\n", merged_hull)
+    for i in range(R.index(upper_tangent[1]), len(R)):
+        result.append(R[i])
 
-    return merged_hull
+    sort_clockwise(result)
+    print("Result:", result)
+
+    return result
 
 
 def compute_hull(points: List[Point]) -> List[Point]:
