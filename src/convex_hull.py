@@ -133,8 +133,8 @@ def merge_hulls(L: List[Point], R: List[Point]) -> List[Point]:
     sort_clockwise(R)
     
     # Print the hulls for debugging purposes.
-    print("L:", L)
-    print("R:", R)
+    #print("L:", L)
+    #print("R:", R)
 
     # Initialize the convex hull.
     result = []
@@ -144,8 +144,8 @@ def merge_hulls(L: List[Point], R: List[Point]) -> List[Point]:
     left_of_right_idx = R.index(min(R, key=lambda p: p[0]))
 
     # Print the indices for debugging purposes.
-    print("Right of left:", right_of_left_idx)
-    print("Left of right:", left_of_right_idx)
+    #print("Right of left:", right_of_left_idx)
+    #print("Left of right:", left_of_right_idx)
 
     # Initialize the upper tangent.
     upper_tangent = (right_of_left_idx, left_of_right_idx)
@@ -176,7 +176,7 @@ def merge_hulls(L: List[Point], R: List[Point]) -> List[Point]:
         if not right_progress and not left_progress:
             break
         
-    print("Upper tangent:", upper_tangent)
+    #print("Upper tangent:", upper_tangent)
 
     # Initialize the lower tangent.
     lower_tangent = (right_of_left_idx, left_of_right_idx)
@@ -207,7 +207,7 @@ def merge_hulls(L: List[Point], R: List[Point]) -> List[Point]:
         if not right_progress and not left_progress:
             break
     
-    print("Lower tangent:", lower_tangent)
+    #print("Lower tangent:", lower_tangent)
 
     # Merge Left
     for i in range(lower_tangent[0], upper_tangent[0] + 1):
@@ -223,8 +223,8 @@ def merge_hulls(L: List[Point], R: List[Point]) -> List[Point]:
         for i in range(0, lower_tangent[1] + 1):
             result.append(R[i])
 
-    print("Result:", result)
-    print()
+    #print("Result:", result)
+    #print()
 
     return result
 
@@ -236,7 +236,10 @@ def compute_hull(points: List[Point]) -> List[Point]:
     """
     
     # Sort the points by ascending x value, breaking ties by ascending y value.
+    points = list(set(points))
+    #print("Points:", points)
     points.sort()
+    #print("Points:", points)
 
     # Base case: if there are 5 or fewer points, we call the base case function.
     if len(points) <= 5:
