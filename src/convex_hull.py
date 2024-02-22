@@ -152,6 +152,7 @@ def merge_hulls(L: List[Point], R: List[Point]) -> List[Point]:
 
     # Find the upper tangent.
     while True:
+        # Invariants
         right_progress = False
         left_progress = False
         
@@ -183,6 +184,7 @@ def merge_hulls(L: List[Point], R: List[Point]) -> List[Point]:
 
     # Find the lower tangent.
     while True:
+        # Invariants
         right_progress = False
         left_progress = False
         

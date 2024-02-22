@@ -44,14 +44,14 @@ def run_benchmarks():
 
         points = generate_points(n)
         start_time = time.time()
-        # TODO: call compute_hull here
+        compute_hull(points)
         time_taken = time.time() - start_time  # time taken (in seconds) for divide-and-conquer
 
         print(f'dnc_time_taken: {time_taken:.3f},', end=' ')
         dnc_hull_times.append(time_taken)
 
         start_time = time.time()
-        # TODO: call base_case_hull here
+        base_case_hull(points)
         time_taken = time.time() - start_time  # time taken (in seconds) for naive
 
         print(f'naive_time_taken: {time_taken:.3f}')
