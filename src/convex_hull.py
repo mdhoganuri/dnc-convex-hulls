@@ -151,8 +151,9 @@ def merge_hulls(L: List[Point], R: List[Point]) -> List[Point]:
     upper_tangent = (right_of_left_idx, left_of_right_idx)
 
     # Find the upper tangent.
+    # The upper tangent is an invariant as it remains a valid tuple 
+    # (Left Point, Right Point) within the bounds.
     while True:
-        # Invariants
         right_progress = False
         left_progress = False
         
@@ -173,7 +174,8 @@ def merge_hulls(L: List[Point], R: List[Point]) -> List[Point]:
                 left_progress = True
             else:
                 break
-            
+        
+        # Check if the 
         if not right_progress and not left_progress:
             break
         
@@ -183,8 +185,9 @@ def merge_hulls(L: List[Point], R: List[Point]) -> List[Point]:
     lower_tangent = (right_of_left_idx, left_of_right_idx)
 
     # Find the lower tangent.
+    # The lower tangent is an invariant as it remains a valid tuple
+    # (Left Point, Right Point) within the bounds.
     while True:
-        # Invariants
         right_progress = False
         left_progress = False
         
@@ -238,12 +241,17 @@ def compute_hull(points: List[Point]) -> List[Point]:
     """
     
     # Sort the points by ascending x value, breaking ties by ascending y value.
-    points = list(set(points))
+    #points = list(set(points))
     #print("Points:", points)
+    
+    # The list of points remain in ascending x-value order displaying the invariant 
+    # property of the list
     points.sort()
     #print("Points:", points)
 
     # Base case: if there are 5 or fewer points, we call the base case function.
+    # This invariant property remains constant troughout the program as it is only 
+    # called when the length of the list of points is less than or equal to 5.
     if len(points) <= 5:
         return base_case_hull(points)
     
